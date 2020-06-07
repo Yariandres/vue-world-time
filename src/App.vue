@@ -1,24 +1,47 @@
 <template>
-  <div id="app">
+  <div
+    id="app"
+    :class="
+      typeof time.datetime != 'undefined' && localtime < '19:00' ? 'day' : ''
+    "
+  >
     <main>
+      <div class="headline">
+        What is the time, in your region?
+      </div>
+
+      <div class="select-box">
+        <select v-model="region" class="select-option" required>
+          <option disabled value="">Select Region...</option>
+          <option>Africa</option>
+          <option>America</option>
+          <option>Antarctica</option>
+          <option>Asia</option>
+          <option>Atlantic</option>
+          <option>Australia</option>
+          <option>Europe</option>
+          <option>Indian</option>
+          <option>Pacific</option>
+        </select>
+      </div>
+
       <div class="search-box">
         <input
           type="text"
           id="search"
           class="search-bar"
-          placeholder="Search..."
+          placeholder="Search city..."
           v-model="query"
           @keypress="fetchTime"
         />
       </div>
-      <div class="time-wrap">
-        <div class="location-box">
-          <div class="location">{{ time.timezone }}</div>
-        </div>
-      </div>
 
-      <div class="time-box">
-        <div class="time">The time is: {{ localtime }}</div>
+      <div class="time-box" v-if="typeof time.datetime != 'undefined'">
+        <div class="time">
+          <p>In - {{ region }}</p>
+          <p>{{ query }}</p>
+          <p>The time is: {{ localtime }}</p>
+        </div>
       </div>
     </main>
   </div>
@@ -29,7 +52,8 @@ export default {
   name: "App",
   data() {
     return {
-      base_url: "http://worldtimeapi.org/api/timezone/Europe/",
+      base_url: "http://worldtimeapi.org/api/timezone/",
+      region: "",
       query: "",
       time: {},
       localtime: ""
@@ -39,7 +63,7 @@ export default {
   methods: {
     fetchTime(e) {
       if (e.key === "Enter") {
-        fetch(`${this.base_url}${this.query}`)
+        fetch(`${this.base_url}${this.region}/${this.query.replace(/ /g, "_")}`)
           .then(res => {
             return res.json();
           })
@@ -67,7 +91,14 @@ body {
 }
 
 #app {
-  /* background-image: url("./assets/day-bg.png"); */
+  background-image: url("./assets/night-bg.png");
+  background-size: cover;
+  background-position: bottom;
+  transition: 0.4s;
+}
+
+#app.day {
+  background-image: url("./assets/day-bg.png");
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
@@ -81,47 +112,41 @@ main {
     rgba(0, 0, 0, 0.75)
   );
 }
-.search-box {
-  width: 100%;
-  margin-bottom: 30px;
+
+.headline {
+  text-align: center;
+  padding: 30px 0;
+  font-size: 20px;
 }
 
-.search-box .search-bar {
-  display: block;
+.select-box {
+  margin-bottom: 30px;
+  background-color: #fff;
+}
+
+.select-option {
   width: 100%;
   padding: 35px;
-  color: #313131;
   font-size: 20px;
 
   appearance: none;
-  border: none;
   outline: none;
   background: none;
-
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
-  background-color: rgba(255, 255, 255, 0.5);
-  transition: 0.4s;
 }
 
-.search-box .search-bar:focus {
-  box-shadow: 0px 0px 16px rgba(255, 255, 255, 0.25);
-  background-color: rgba(255, 255, 255, 0.75);
-}
-.location-box .location {
-  color: #0e1335;
-  font-size: 42px;
-  font-weight: 500px;
-  text-align: center;
-  text-shadow: 1px 3px rgba(255, 255, 255, 0.25);
+.search-box {
+  margin-bottom: 30px;
+  background-color: #fff;
 }
 
-.location-box .date {
-  color: #0e1335;
-  font-size: 30px;
-  font-weight: 300px;
-  text-align: center;
-  font-style: italic;
-  text-shadow: 1px 3px rgba(255, 255, 255, 0.25);
+.search-bar {
+  width: 100%;
+  padding: 35px;
+  font-size: 20px;
+
+  appearance: none;
+  outline: none;
+  background: none;
 }
 
 .time-box {
