@@ -2,11 +2,20 @@
   <div
     id="app"
     :class="
-      typeof time.datetime != 'undefined' && localtime < '19:00' ? 'day' : ''
+      typeof time.datetime != 'undefined' && localtime < '19:00'
+        ? 'day'
+        : 'night'
     "
   >
     <main>
-      <div class="headline">
+      <div
+        class="headline"
+        :class="
+          typeof time.datetime != 'undefined' && localtime > '19:00'
+            ? 'light'
+            : ''
+        "
+      >
         What is the time, in your region?
       </div>
 
@@ -91,7 +100,6 @@ body {
 }
 
 #app {
-  background-image: url("./assets/night-bg.png");
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
@@ -99,6 +107,13 @@ body {
 
 #app.day {
   background-image: url("./assets/day-bg.png");
+  background-size: cover;
+  background-position: bottom;
+  transition: 0.4s;
+}
+
+#app.night {
+  background-image: url("./assets/night-bg.png");
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
@@ -117,6 +132,10 @@ main {
   text-align: center;
   padding: 30px 0;
   font-size: 20px;
+}
+
+.headline.light {
+  color: #fff;
 }
 
 .select-box {
